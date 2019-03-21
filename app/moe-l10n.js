@@ -108,6 +108,7 @@ const strings = {
         "Save as": "Save as",
         "Export as HTML": "Export as HTML",
         "Export as PDF": "Export as PDF",
+        "Export as BLOG": "Export as BLOG",
         "Settings": "Settings",
         "About": "About",
 

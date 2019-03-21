@@ -138,6 +138,76 @@ function pdf(cb) {
     });
 }
 
+function blog(cb) {
+    render(w.content, 'blog', (res, haveMath, haveCode) => {
+        const doc = document.implementation.createHTMLDocument();
+        const head = doc.querySelector('head');
+        const meta = doc.createElement('meta');
+        meta.setAttribute('charset', 'utf-8');
+        head.appendChild(meta);
+        
+        const post_redirect = doc.createElement('script');
+        post_redirect.src = "/resource/js/post-redirect.js";
+        post_redirect.type = "text/javascript";
+        head.appendChild(post_redirect);
+
+        const style = doc.createElement('style');
+        style.innerHTML = MoeditorFile.read(require('./moe-rendertheme').getCSS(false), '').toString();
+        head.appendChild(style);
+        
+        if (haveCode) {
+            const styleHLJS = doc.createElement('style');
+            styleHLJS.innerHTML = MoeditorFile.read(path.resolve(path.dirname(path.dirname(require.resolve('highlight.js'))), `styles/${moeApp.config.get('highlight-theme')}.css`), '').toString();
+            head.appendChild(styleHLJS);
+        }
+        
+        const customCSSs = moeApp.config.get('custom-csss');
+        if (Object.getOwnPropertyNames(customCSSs).length !== 0) for (let x in customCSSs) if (customCSSs[x].selected) {
+            let style = doc.createElement('style');
+            style.innerHTML = MoeditorFile.read(customCSSs[x].fileName);
+            doc.head.appendChild(style);
+        }
+
+        var title = res.match(/\<h1.*\>.*(?=\<\/h1\>)/gi);
+        if ( title ) {
+            title = title.join('').replace(/\<h1.*\>/gi, "");
+            
+            const tl = doc.createElement('title');
+            tl.innerHTML = title;
+            head.appendChild(tl);
+            res = res.replace(/\<h1.*\>.*\<\/h1\>/gi, "");
+        }
+        
+        const content = doc.createElement('div');
+        content.id = "container";
+        content.className = "export export-html";
+        content.innerHTML = "<hr>"+res;
+
+        const disqus = doc.createElement('div');
+        disqus.id = "disqus_thread";
+
+        const disqusScript = doc.createElement('script');
+        disqusScript.innerHTML = `(function() {
+            var d = document, s = d.createElement('script');
+            s.src = 'https://mobbing-1.disqus.com/embed.js';
+            s.setAttribute('data-timestamp', +new Date());
+            (d.head || d.body).appendChild(s);
+        })();
+`;
+
+        const card_body = doc.createElement('div');
+        card_body.className = "markdown-body";
+        card_body.appendChild(content);
+        card_body.appendChild(disqus);
+        card_body.appendChild(disqusScript);
+
+
+        const body = doc.querySelector('body');
+        body.appendChild(card_body);
+        cb('<!doctype html>\n<html>\n' + doc.querySelector('html').innerHTML + '\n</html>', title);
+    });
+}
+
 var flag = false;
 if (!flag) {
     flag = true;
@@ -154,9 +224,16 @@ if (!flag) {
             pdf(cb);
         });
     });
+
+    ipcRenderer.on('action-export-blog', () => {
+        MoeditorAction.exportAsBLOG(w.window, (cb) => {
+            blog(cb);
+        });
+    });
 }
 
 module.exports = {
     html: html,
-    pdf: pdf
+    pdf: pdf,
+    blog: blog
 };

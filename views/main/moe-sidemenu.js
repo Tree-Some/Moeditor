@@ -92,6 +92,13 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
+    sideMenu.querySelector('li[data-action=export-as-blog]').itemClicked = (() => {
+        const MoeditorExport = require('./moe-export');
+        MoeditorAction.exportAsBLOG(w.window, (cb) => {
+            MoeditorExport.blog(cb);
+        });
+    });
+
     sideMenu.querySelector('li[data-action=about]').itemClicked = (() => {
         const ipcRenderer = require('electron').ipcRenderer;
         ipcRenderer.send('show-about-window');

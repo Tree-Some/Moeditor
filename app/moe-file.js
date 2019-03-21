@@ -24,6 +24,14 @@ const fs = require('fs'),
       mime = require('mime');
 
 class MoeditorFile {
+    static mkDir(path) {
+        try {
+            return fs.mkdirSync(path);
+        } catch (e) {
+            return false
+        }
+    }
+
     static isFile(fileName) {
         try {
             return fs.statSync(fileName).isFile();
@@ -52,7 +60,7 @@ class MoeditorFile {
 
     static read(fileName, empty) {
         try {
-            return fs.readFileSync(fileName);
+            return fs.readFileSync(fileName, {encoding: 'utf8'});
         } catch(e) {
             return empty;
         }
