@@ -189,18 +189,21 @@ function blog(cb) {
         const disqusScript = doc.createElement('script');
         disqusScript.innerHTML = `(function() {
             var d = document, s = d.createElement('script');
-            s.src = 'https://mobbing-1.disqus.com/embed.js';
+            s.src = 'https://mobbing-kr.disqus.com/embed.js';
             s.setAttribute('data-timestamp', +new Date());
             (d.head || d.body).appendChild(s);
-        })();
-`;
+		})();`;
+
+		const markdwon_body = doc.createElement('div');
+		markdwon_body.className = "markdown-body";
+
+        markdwon_body.appendChild(content);
+        markdwon_body.appendChild(disqus);
+		markdwon_body.appendChild(disqusScript);
 
         const card_body = doc.createElement('div');
-        card_body.className = "markdown-body";
-        card_body.appendChild(content);
-        card_body.appendChild(disqus);
-        card_body.appendChild(disqusScript);
-
+		card_body.className = "card-body";
+		card_body.appendChild(markdwon_body);
 
         const body = doc.querySelector('body');
         body.appendChild(card_body);

@@ -269,8 +269,9 @@ class MoeditorAction {
 
 				/* object posts push */
 				let date = new Date().format('yyyy-MM-dd-HH-mm-ss');
+				let postHref = Path.join('/posts', href, date, '/').replace(/\\/g, '/');
 				rtnObj.posts.push({
-					href: Path.join('/posts', href, date, '/').replace(/\\/g, '/'),
+					href: postHref,
 					icon: 'icon-note',
 					title: title,
 				});
@@ -280,7 +281,24 @@ class MoeditorAction {
 				MoeditorFile.mkDir(targetPath);
 				
 				if (targetPath) {
+					/* replace imgs */
+					let imgs = s.match(/<img .*src=["|'].*["|'].+?>/gi);
+					imgs.forEach(element => {
+						let src = element.match(/src=["|'].+?["|']/gi);
+						if ( src ) {
+							src = src[0];
+							let url = src.replace(/src=|["|']/gi, "");
+							let rurl = Path.join(postHref, url);
+							let rimg = element.replace(src, `src="${rurl}"`);
+
+							s = s.replace(element, rimg);
+						}
+					});
+
+					/* write posting */
 					MoeditorFile.write(Path.join(targetPath, '/index.html'), s);
+					/* copy imgs folder */
+					MoeditorFile.copyFolderRecursiveSync("./imgs", Path.join(targetPath, "/imgs"));
 					/* write post.js */
 					MoeditorFile.write(postjsDRo, 'const posts = \n' + JSON.stringify(postJSON, null, '\t'));
 				}
