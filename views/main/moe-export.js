@@ -146,6 +146,32 @@ function blog(cb) {
         meta.setAttribute('charset', 'utf-8');
         head.appendChild(meta);
         
+        /*
+        <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-136963826-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-136963826-1');
+</script>
+*/
+        const google_analytics = doc.createElement('script');
+        google_analytics.async = true;
+        google_analytics.src = "https://www.googletagmanager.com/gtag/js?id=UA-136963826-1";
+        head.appendChild(google_analytics);
+
+        const google_analytics_script = doc.createElement('script');
+        google_analytics_script.innerHTML = `
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+        
+            gtag('config', 'UA-136963826-1');
+        `;
+        head.appendChild(google_analytics_script);
+
         const post_redirect = doc.createElement('script');
         post_redirect.src = "/resource/js/post-redirect.js";
         post_redirect.type = "text/javascript";

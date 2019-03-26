@@ -283,17 +283,19 @@ class MoeditorAction {
 				if (targetPath) {
 					/* replace imgs */
 					let imgs = s.match(/<img .*src=["|'].*["|'].+?>/gi);
-					imgs.forEach(element => {
-						let src = element.match(/src=["|'].+?["|']/gi);
-						if ( src ) {
-							src = src[0];
-							let url = src.replace(/src=|["|']/gi, "");
-							let rurl = Path.join(postHref, url);
-							let rimg = element.replace(src, `src="${rurl}"`);
-
-							s = s.replace(element, rimg);
-						}
-					});
+					if ( imgs ) {
+						imgs.forEach(element => {
+							let src = element.match(/src=["|'].+?["|']/gi);
+							if ( src ) {
+								src = src[0];
+								let url = src.replace(/src=|["|']/gi, "");
+								let rurl = Path.join(postHref, url);
+								let rimg = element.replace(src, `src="${rurl}"`);
+								
+								s = s.replace(element, rimg);
+							}
+						});
+					}
 
 					/* write posting */
 					MoeditorFile.write(Path.join(targetPath, '/index.html'), s);
@@ -301,6 +303,28 @@ class MoeditorAction {
 					MoeditorFile.copyFolderRecursiveSync("./imgs", Path.join(targetPath, "/imgs"));
 					/* write post.js */
 					MoeditorFile.write(postjsDRo, 'const posts = \n' + JSON.stringify(postJSON, null, '\t'));
+
+					/* save md */
+					try {
+						let folderName = Path.join(Path.dirname(postjsDRo), `../md_posts/${date}/`);
+						let fileName = Path.join(folderName, "index.md");
+
+						MoeditorFile.mkDir(folderName);
+						MoeditorFile.write(fileName, w.moeditorWindow.content);
+						MoeditorFile.copyFolderRecursiveSync("./imgs", Path.join(Path.dirname(fileName), "/imgs"));
+						w.moeditorWindow.fileContent = w.moeditorWindow.content;
+						w.moeditorWindow.fileName = fileName;
+						w.moeditorWindow.changed = false;
+						moeApp.addRecentDocument(fileName);
+						w.moeditorWindow.window.setDocumentEdited(false);
+						w.moeditorWindow.window.setRepresentedFilename(fileName);
+						w.moeditorWindow.window.webContents.send('pop-message', { type: 'success', content: __('Saved successfully.') });
+						w.moeditorWindow.window.webContents.send('set-title', fileName);
+					} catch (e) {
+						w.moeditorWindow.window.webContents.send('pop-message', { type: 'error', content: __('Can\'t save file') + ', ' + e.toString() });
+						console.log('Can\'t save file: ' + e.toString());
+						return false;
+					}
 				}
 				
 				const {shell} = require('electron');

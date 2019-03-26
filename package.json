@@ -1,13 +1,14 @@
 {
   "name": "moeditor",
-  "version": "0.2.0",
+  "version": "0.2.7",
   "description": "Your all-purpose markdown editor",
   "main": "app/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "electron .",
     "dist": "build -l snap",
-    "postinstall": "electron-builder install-app-deps"
+    "postinstall": "electron-builder install-app-deps",
+    "build:win64" : "build --win --x64"
   },
   "repository": {
     "type": "git",
@@ -46,11 +47,18 @@
   },
   "devDependencies": {
     "electron": "^1.4.0",
-    "electron-builder": "^20.31.2"
+    "electron-builder": "^20.39.0"
   },
   "build": {
     "linux": {
       "icon": "icons/Moeditor.icns"
+    },
+    "win": {
+	    "target": [
+		    "zip",
+		    "nsis"
+	    ],
+	    "icon": "icons/Moeditor.ico"
     }
   }
 }
