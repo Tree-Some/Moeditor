@@ -163,6 +163,7 @@ function blog(cb) {
         head.appendChild(google_analytics);
 
         const google_analytics_script = doc.createElement('script');
+        google_analytics_script.setAttribute('type', 'eval');
         google_analytics_script.innerHTML = `
             window.dataLayer = window.dataLayer || [];
             function gtag(){dataLayer.push(arguments);}
@@ -213,6 +214,7 @@ function blog(cb) {
         disqus.id = "disqus_thread";
 
         const disqusScript = doc.createElement('script');
+        disqusScript.setAttribute('type', 'eval')
         disqusScript.innerHTML = `(function() {
             var d = document, s = d.createElement('script');
             s.src = 'https://mobbing-kr.disqus.com/embed.js';
