@@ -16,7 +16,7 @@
 
 ![imgs-1](imgs/image-1.png)
 
-** Exort as BLOG **라는 메뉴를 클릭합니다.
+**Exort as BLOG** 라는 메뉴를 클릭합니다.
 
 ![imgs-2](imgs/image-2.png)
 
