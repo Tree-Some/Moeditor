@@ -140,11 +140,60 @@ function pdf(cb) {
 
 function blog(cb) {
     render(w.content, 'blog', (res, haveMath, haveCode) => {
+
+        String.prototype.escapeHtml = function() {
+            let map = {
+                '&amp;': '&',
+                '&lt;': '<',
+                '&gt;': '>',
+                '&quot;': '"',
+                "&#039;": "'"
+            };
+            
+            return this.replace(/&amp;|&lt;|&gt;|&quot;|&#039/g, function(m) { return map[m]; });
+        };
+
+
         const doc = document.implementation.createHTMLDocument();
         const head = doc.querySelector('head');
-        const meta = doc.createElement('meta');
-        meta.setAttribute('charset', 'utf-8');
-        head.appendChild(meta);
+        const charset = doc.createElement('meta');
+        charset.setAttribute('charset', 'utf-8');
+        head.appendChild(charset);
+
+        var title = res.match(/\<h1.*\>.*(?=\<\/h1\>)/gi);
+        if ( title ) {
+            title = title.join('').replace(/\<h1.*\>/gi, "");
+            
+            const tl = doc.createElement('title');
+            tl.innerHTML = title;
+            head.appendChild(tl);
+
+            const ogtl = doc.createElement('meta');
+            ogtl.setAttribute('property','og:title');
+            ogtl.setAttribute('content',title);
+            head.appendChild(ogtl);
+            res = res.replace(/\<h1.*\>.*\<\/h1\>/gi, "");
+        }
+
+        const description = doc.createElement('meta');
+        description.setAttribute('name', 'description');
+        description.setAttribute('content', res.replace(/\<.*?\>/g, "").substring(0, 100));
+        head.appendChild(description);
+
+        const ogdesc = doc.createElement('meta');
+        ogdesc.setAttribute('property', 'og:description');
+        ogdesc.setAttribute('content', res.replace(/\<.*?\>/g, "").substring(0, 100));
+        head.appendChild(ogdesc);
+
+        var img = res.escapeHtml();
+        img = img.match(/\<img.*?src=[\"|\'].*?[\"|\'].*?\>/);
+        if ( img ) {
+            img = img[0].replace(/\<img.*?src=["|']/, "").replace(/["|'].*?\>/, "");
+            const ogimg = doc.createElement('meta');
+            ogimg.setAttribute('property', 'og:image');
+            ogimg.setAttribute('content', img);
+            head.appendChild(ogimg);
+        }
         
         /*
         <!-- Global site tag (gtag.js) - Google Analytics -->
@@ -193,16 +242,6 @@ function blog(cb) {
             let style = doc.createElement('style');
             style.innerHTML = MoeditorFile.read(customCSSs[x].fileName);
             doc.head.appendChild(style);
-        }
-
-        var title = res.match(/\<h1.*\>.*(?=\<\/h1\>)/gi);
-        if ( title ) {
-            title = title.join('').replace(/\<h1.*\>/gi, "");
-            
-            const tl = doc.createElement('title');
-            tl.innerHTML = title;
-            head.appendChild(tl);
-            res = res.replace(/\<h1.*\>.*\<\/h1\>/gi, "");
         }
         
         const content = doc.createElement('div');
