@@ -2,7 +2,7 @@
 **[Mobbing-Theme](https://github.com/mobbing/Mobbing-Theme)** 블로그 포스팅을 위한 수정된 버전의 에디터입니다. 원본과 기존 사용법은 **[Moeditor](https://github.com/Moeditor/Moeditor)** 에서 확인하실 수 있습니다.
 
 ## 이미지 참조 방법
-프로그램이 설치 된 폴더 (윈도우 기준 `C:\Users\youn-window\AppData\Local\Programs\moeditor`) 또는 실행 된 폴더 `./` 에서 `imgs` 폴더를 생성합니다.
+프로그램이 설치 된 폴더 (윈도우 기준 `C:\Users\[User Name]\AppData\Local\Programs\moeditor`) 또는 실행 된 폴더 `./` 에서 `imgs` 폴더를 생성합니다.
 
 ```md
 ![img-1](imgs/image-1.png)
